@@ -1,0 +1,194 @@
+import { useState } from 'react';
+
+const SalesReport = () => {
+  const [formData, setFormData] = useState({
+    month: '',
+    day: '',
+    dayOfWeek: '',
+    location: '',
+    totalStores: '',
+    totalTables: '',
+    employees: '',
+    // 소주별 테이블 수
+    goodDay: '',
+    talk: '',
+    busan19: '',
+    busan16: '',
+    chamIsul: '',
+    jinro: '',
+    jinroGold: '',
+    daesun: '',
+    gangalli: '',
+    daesunEtc: '',
+    saero: '',
+    saeroPlum: '',
+    chungha: '',
+    etc: '',
+    // 전환 및 추가주문
+    conversion: {
+      total: { goodDay: '', talk: '', busan19: '', busan16: '' },
+      employee1: { name: '', goodDay: '', talk: '', busan19: '', busan16: '' },
+      employee2: { name: '', goodDay: '', talk: '', busan19: '', busan16: '' }
+    },
+    additional: {
+      total: { goodDay: '', talk: '', busan19: '', busan16: '' },
+      employee1: { goodDay: '', talk: '', busan19: '', busan16: '' },
+      employee2: { goodDay: '', talk: '', busan19: '', busan16: '' }
+    }
+  });
+
+  const calculatePercentage = (value) => {
+    if (!formData.totalTables || !value) return '0';
+    return ((value / formData.totalTables) * 100).toFixed(1);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // 폼 제출 시 자동으로 리포트가 업데이트됩니다
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes('.')) {
+      const [section, subsection, field] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [subsection]: {
+            ...prev[section][subsection],
+            [field]: value
+          }
+        }
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-4">상권보고 입력 폼</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              placeholder="월"
+              name="month"
+              value={formData.month}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="number"
+              placeholder="일"
+              name="day"
+              value={formData.day}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="text"
+              placeholder="요일"
+              name="dayOfWeek"
+              value={formData.dayOfWeek}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="text"
+              placeholder="상권이름"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="number"
+              placeholder="방문업소 수"
+              name="totalStores"
+              value={formData.totalStores}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="number"
+              placeholder="총 테이블 수"
+              name="totalTables"
+              value={formData.totalTables}
+              onChange={handleInputChange}
+              className="border p-2 rounded"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">소주별 테이블 수</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="number"
+                placeholder="좋은데이"
+                name="goodDay"
+                value={formData.goodDay}
+                onChange={handleInputChange}
+                className="border p-2 rounded"
+              />
+              <input
+                type="number"
+                placeholder="톡시리즈"
+                name="talk"
+                value={formData.talk}
+                onChange={handleInputChange}
+                className="border p-2 rounded"
+              />
+              {/* 다른 소주 입력 필드들... */}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">근무인원 및 실적</h2>
+            <input
+              type="text"
+              placeholder="근무인원 (이름/이름)"
+              name="employees"
+              value={formData.employees}
+              onChange={handleInputChange}
+              className="w-full border p-2 rounded"
+            />
+          </div>
+        </form>
+      </div>
+
+      {/* 보고서 출력 */}
+      <div className="mt-8 p-6 border rounded-lg bg-white">
+        <h1 className="text-2xl font-bold mb-6">
+          {formData.month}월 {formData.day}일 {formData.dayOfWeek}요일 {formData.location} 상권보고
+        </h1>
+
+        <div className="space-y-6">
+          <section>
+            <h2 className="text-xl font-semibold mb-4">1. 점유비</h2>
+            <div className="mb-4">
+              <p>총 방문업소: {formData.totalStores}개</p>
+              <p>총 테이블 수: {formData.totalTables}t</p>
+            </div>
+
+            <div className="space-y-2">
+              <div>
+                가. 무학: {parseInt(formData.goodDay) + parseInt(formData.talk || 0) + parseInt(formData.busan19 || 0) + parseInt(formData.busan16 || 0)}t 
+                ({calculatePercentage(parseInt(formData.goodDay) + parseInt(formData.talk || 0) + parseInt(formData.busan19 || 0) + parseInt(formData.busan16 || 0))}%)
+              </div>
+              <div className="ml-4">
+                - 좋은데이: {formData.goodDay}t ({calculatePercentage(formData.goodDay)}%)
+                {/* 다른 제품들... */}
+              </div>
+            </div>
+            {/* 다른 회사들... */}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SalesReport;
